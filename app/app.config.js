@@ -4,6 +4,7 @@ const { APP_NAME } = require('@rowrace/shared/constants');
 module.exports = () => ({
   name: APP_NAME,
   slug: 'rowrace-3d',
+  owner: 'increadz',
   scheme: 'rowrace',
   version: '0.1.0',
   orientation: 'landscape',
@@ -12,13 +13,20 @@ module.exports = () => ({
   android: {
     package: 'com.zynocodes.rowrace3d',
     versionCode: 1,
-    permissions: [
-      'android.permission.BLUETOOTH_SCAN',
-      'android.permission.BLUETOOTH_CONNECT',
-      'android.permission.ACCESS_FINE_LOCATION',
-      'android.permission.WAKE_LOCK',
+    // Bluetooth + location permissions come from the react-native-ble-plx plugin below:
+    // BLUETOOTH_SCAN (neverForLocation) + BLUETOOTH_CONNECT on Android 12+, and
+    // ACCESS_FINE_LOCATION limited to Android ≤ 11. Don't list them here: an explicit
+    // BLUETOOTH_SCAN would stop the plugin from adding the neverForLocation flag.
+    permissions: ['android.permission.WAKE_LOCK', 'android.permission.VIBRATE'],
+    blockedPermissions: [
+      'android.permission.ACCESS_BACKGROUND_LOCATION',
+      'android.permission.RECORD_AUDIO',
+      'android.permission.SYSTEM_ALERT_WINDOW',
+      'android.permission.READ_EXTERNAL_STORAGE',
+      'android.permission.WRITE_EXTERNAL_STORAGE',
+      'android.permission.FOREGROUND_SERVICE',
+      'android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK',
     ],
-    blockedPermissions: ['android.permission.ACCESS_BACKGROUND_LOCATION'],
   },
   ios: {
     bundleIdentifier: 'com.zynocodes.rowrace3d',
@@ -37,7 +45,11 @@ module.exports = () => ({
         bluetoothAlwaysPermission: 'Allow $(PRODUCT_NAME) to connect to your Concept2 PM5 monitor.',
       },
     ],
-    'expo-audio',
+    // Sound effects only: no microphone, no background playback service.
+    [
+      'expo-audio',
+      { recordAudioAndroid: false, enableBackgroundPlayback: false, microphonePermission: false },
+    ],
     'expo-font',
     'expo-sharing',
     ['expo-splash-screen', { backgroundColor: '#0A0F1C' }],
@@ -45,5 +57,9 @@ module.exports = () => ({
     ['expo-screen-orientation', { initialOrientation: 'LANDSCAPE' }],
   ],
   experiments: { typedRoutes: false },
-  extra: { buildNumber: 1 },
+  extra: {
+    buildNumber: 1,
+    // EAS project @increadz/rowrace-3d (created by `eas build`; dynamic configs must set it by hand).
+    eas: { projectId: '18a6a626-0dab-4da7-b4bd-4d0b8a7da7d5' },
+  },
 });

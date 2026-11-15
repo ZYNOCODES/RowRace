@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -15,6 +16,8 @@ import {
 import { SpaceGrotesk_500Medium, SpaceGrotesk_700Bold } from '@expo-google-fonts/space-grotesk';
 import { colors } from '../src/theme/tokens';
 import { useSettingsHydrated } from '../src/state/settings';
+import { bootstrap, shutdown } from '../src/services/bootstrap';
+import { logger } from '../src/services';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -38,6 +41,19 @@ export default function RootLayout() {
   useEffect(() => {
     if (ready) SplashScreen.hideAsync().catch(() => {});
   }, [ready]);
+
+  useEffect(() => {
+    if (!hydrated) return undefined;
+    bootstrap().catch((e) => console.warn('[bootstrap]', e));
+    return () => {
+      shutdown();
+    };
+  }, [hydrated]);
+
+  const pathname = usePathname();
+  useEffect(() => {
+    logger.ui(pathname);
+  }, [pathname]);
 
   if (!ready) return null;
 

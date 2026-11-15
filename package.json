@@ -8,12 +8,15 @@
     "simulator"
   ],
   "scripts": {
+    "start": "npm --workspace app run start --",
+    "start:go": "npm --workspace app run start:go --",
     "app": "npm --workspace app run start",
     "app:android": "npm --workspace app run android",
     "sim": "npm --workspace simulator run start",
     "test": "jest",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "sim:dry": "npm --workspace simulator run start -- --dry-run"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.29.14",

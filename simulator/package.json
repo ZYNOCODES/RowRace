@@ -11,6 +11,7 @@
     "start": "node src/index.js"
   },
   "dependencies": {
+    "@abandonware/bleno": "^0.6.2",
     "@rowrace/shared": "0.1.0"
   }
 }

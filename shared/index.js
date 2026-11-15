@@ -10,4 +10,10 @@ module.exports = {
   layouts: require('./pm5/layouts'),
   physics: require('./physics'),
   format: require('./format'),
+  log: require('./log/format'),
+  sim: {
+    ...require('./sim/rowerModel'),
+    ...require('./sim/scenarios'),
+    packets: require('./sim/packets'),
+  },
 };

@@ -48,3 +48,18 @@ Calories / hr = (2.8 / pace³) * (4.0 * 0.8604) + 300
 - Response contents: status byte (bit 7 frame toggle, bits 4–5 previous frame status, bits 0–3 state), then `[cmd, count, data…]` per command.
 - Limits: 120-byte max frame, 50 ms minimum gap between frames.
 - **Not implemented (not needed by the MVP):** splitting a frame larger than 20 bytes across several BLE writes, and the PM proprietary command sets behind the `0x76/0x77/0x7E/0x7F` wrappers.
+
+## App-side decisions (phase 3)
+
+- **When a `sample` is emitted:** on every General Status (0x31), individual or multiplexed. 0x31 is the only status packet with distance, so it is the PM5's canonical tick. 0x32/0x33 only update merged fields. **[verify on PM5]** that 0x31 arrives at the sample rate alongside 0x32/0x33.
+- **Stroke pairing:** a `stroke` event waits up to 400 ms for the 0x36 with the same stroke count as the 0x35. The simulator sends 0x35 then 0x36; **[verify on PM5]** the real order.
+- **Watts in samples:** the latest 0x36 stroke power if it is less than 6 s old and the rower is active; otherwise 2.8·v³ from the current speed; 0 when not rowing.
+- **Scan filter:** by advertised name prefix `PM5`, not by service UUID, because we don't know which UUID every firmware advertises. **[verify on PM5]** the advertised name is `PM5 <serial>`.
+- **MTU:** 185 is requested on Android. Every PM5 notification fits in the default 20 bytes, so a refused MTU request doesn't matter.
+- **Sample rate:** after writing `2` to 0x0034 the app reads it back. The read-back value is what Diagnostics shows.
+
+## Observed on a real Android link (phase 3 test, simulator as peripheral)
+
+- **Scan name:** match on the advertised `localName` first. `device.name` can be a stale cached name for the same address. **[verify on PM5]** what a real PM5 puts in its advert vs scan response.
+- **Notification timing:** packets are delivered in bursts per connection event (pairs 1 ms apart, then ~300–500 ms gaps at a 250 ms rate). Use the PM5's `elapsed` field and distance deltas for motion; use receive time only for staleness and render interpolation.
+- **MTU:** the phone negotiated 256 with the simulator (bleno's max).
