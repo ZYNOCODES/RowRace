@@ -13,10 +13,12 @@ export const useSettings = create(
   persist(
     (set) => ({
       language: pickLanguage(getLocales()?.[0]?.languageTag),
-      /** 'kmh' shows speed in km/h, 'pace' favors /500 m. */
+      /** Big gauge: 'pace' (/500 m) or 'kmh'. */
       units: 'pace',
       soundsOn: true,
       voiceOn: true,
+      /** Voice announcements language; null = same as the app language. */
+      voiceLanguage: null,
       hapticsOn: true,
       /** @type {DataSourceKind} */
       dataSource: 'ble',

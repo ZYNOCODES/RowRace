@@ -1,4 +1,7 @@
 const { APP_NAME } = require('@rowrace/shared/constants');
+// Single source of truth for versions: app/package.json ("version" and "buildNumber").
+// Bump buildNumber for every APK sent to the client (Android versionCode must increase).
+const { version, buildNumber } = require('./package.json');
 
 /** Expo config. Android tablet first, landscape-locked. */
 module.exports = () => ({
@@ -6,13 +9,18 @@ module.exports = () => ({
   slug: 'rowrace-3d',
   owner: 'increadz',
   scheme: 'rowrace',
-  version: '0.1.0',
+  version,
+  icon: './assets/brand/icon.png',
   orientation: 'landscape',
   userInterfaceStyle: 'dark',
   backgroundColor: '#0A0F1C',
   android: {
     package: 'com.zynocodes.rowrace3d',
-    versionCode: 1,
+    versionCode: buildNumber,
+    adaptiveIcon: {
+      foregroundImage: './assets/brand/adaptive-foreground.png',
+      backgroundColor: '#0A0F1C',
+    },
     // Bluetooth + location permissions come from the react-native-ble-plx plugin below:
     // BLUETOOTH_SCAN (neverForLocation) + BLUETOOTH_CONNECT on Android 12+, and
     // ACCESS_FINE_LOCATION limited to Android ≤ 11. Don't list them here: an explicit
@@ -52,13 +60,16 @@ module.exports = () => ({
     ],
     'expo-font',
     'expo-sharing',
-    ['expo-splash-screen', { backgroundColor: '#0A0F1C' }],
+    [
+      'expo-splash-screen',
+      { backgroundColor: '#0A0F1C', image: './assets/brand/splash.png', imageWidth: 220 },
+    ],
     'expo-localization',
     ['expo-screen-orientation', { initialOrientation: 'LANDSCAPE' }],
   ],
   experiments: { typedRoutes: false },
   extra: {
-    buildNumber: 1,
+    buildNumber,
     // EAS project @increadz/rowrace-3d (created by `eas build`; dynamic configs must set it by hand).
     eas: { projectId: '18a6a626-0dab-4da7-b4bd-4d0b8a7da7d5' },
   },

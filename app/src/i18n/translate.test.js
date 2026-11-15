@@ -14,9 +14,7 @@ test('fr and ar define every English key', () => {
 });
 
 test('params and fallbacks', () => {
-  expect(translate('fr', 'common.comingInPhase', { phase: 3 })).toBe(
-    'Cet écran est construit à la phase 3.',
-  );
+  expect(translate('fr', 'results.autoHome', { seconds: 7 })).toBe('Accueil dans 7 s');
   expect(translate('xx', 'home.race')).toBe('Race');
   expect(translate('en', 'no.such.key')).toBe('no.such.key');
 });

@@ -28,7 +28,7 @@ export default function Home() {
         <Card
           style={styles.bigCard}
           accessibilityLabel={t('home.race')}
-          onPress={() => router.push('/race/map')}
+          onPress={() => router.push('/race/map?mode=race')}
         >
           <Icon name="flag" size={48} color={colors.primary} />
           <Text variant="display">{t('home.race')}</Text>

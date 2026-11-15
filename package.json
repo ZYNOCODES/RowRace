@@ -20,7 +20,9 @@
     "preview:scene": "rm -rf tools/scene-preview/characters && cp -r app/assets/characters tools/scene-preview/characters && esbuild tools/scene-preview/main.js --bundle --format=esm --outfile=tools/scene-preview/dist/preview.js && echo 'open http://localhost:8765/?map=alpine&char=erika' && python3 -m http.server 8765 --directory tools/scene-preview",
     "characters": "node tools/characters/convert.mjs",
     "characters:thumbs": "node tools/characters/thumbs.mjs",
-    "characters:publish": "node tools/characters/publish.mjs"
+    "characters:publish": "node tools/characters/publish.mjs",
+    "brand": "node tools/brand/make-icons.mjs",
+    "apk": "npm --workspace app run build:apk"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.29.14",

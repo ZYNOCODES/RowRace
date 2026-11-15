@@ -49,9 +49,20 @@ export async function readDeviceInfo(manager, deviceId, logger, alive) {
   return info;
 }
 
+/** Reads 0x0034. @returns {Promise<number|null>} interval in ms, null if unreadable */
+async function readSampleRateMs(manager, deviceId) {
+  try {
+    const ch = await manager.readCharacteristicForDevice(deviceId, UUID.ROWING_SERVICE, UUID.SAMPLE_RATE);
+    const rate = decodeSampleRate(B.base64ToBytes(ch?.value));
+    return rate == null ? null : SAMPLE_RATE_MS[rate];
+  } catch {
+    return null;
+  }
+}
+
 /**
- * Writes 250 ms to 0x0034 and reads it back. Old firmware may refuse the write: then the
- * PM5 keeps its 500 ms default and we carry on.
+ * Writes 250 ms to 0x0034 and reads it back. Old firmware may refuse the write: then we read
+ * what the PM5 actually uses (500 ms default if even that read fails) and carry on.
  * @returns {Promise<number|null>} effective interval in ms, null if abandoned
  */
 export async function writeSampleRate(manager, deviceId, logger, alive) {
@@ -65,18 +76,14 @@ export async function writeSampleRate(manager, deviceId, logger, alive) {
       B.bytesToBase64([WANTED_SAMPLE_RATE]),
     );
     if (!alive()) return null;
-    const ch = await manager.readCharacteristicForDevice(
-      deviceId,
-      UUID.ROWING_SERVICE,
-      UUID.SAMPLE_RATE,
-    );
-    const rate = decodeSampleRate(B.base64ToBytes(ch?.value));
-    const ms = SAMPLE_RATE_MS[rate ?? WANTED_SAMPLE_RATE];
-    logger.ble('sampleRate.ok', { readBack: rate, ms });
+    const ms = (await readSampleRateMs(manager, deviceId)) ?? SAMPLE_RATE_MS[WANTED_SAMPLE_RATE];
+    logger.ble('sampleRate.ok', { ms });
     return ms;
   } catch (e) {
-    const ms = SAMPLE_RATE_MS[1];
-    logger.ble('sampleRate.failed', { message: msg(e), fallbackMs: ms });
+    if (!alive()) return null;
+    const actual = await readSampleRateMs(manager, deviceId);
+    const ms = actual ?? SAMPLE_RATE_MS[1];
+    logger.ble('sampleRate.failed', { message: msg(e), actualMs: actual, usingMs: ms });
     return ms;
   }
 }

@@ -277,6 +277,78 @@
   - rowing realism: knee compression at the catch is mild, to tune later;
   - the on-demand download path: hosting is ready as GitHub Release assets (`npm run characters:publish`), but no repo is configured yet and `gh` is not installed on this PC.
 
-## Phase 6: Screens and HUD (not started)
+## Phase 6: Screens and HUD (done; not yet run on a device)
 
-## Phase 7: Hardening and delivery (not started)
+### Done
+
+- **Flow:** Onboarding (3 slides, then the Bluetooth explanation before the system dialog) → Connect → Home → **Choose map** → **Choose workout** → **Ready** → **Race** → **Results** → Home. Free Row uses the same flow with the workout preset to Free.
+- **Choose map:** horizontal snap carousel of large cards, each with a preview image (rendered from the 3D scene at build time, `app/assets/maps/*.jpg`), name, mood and a difficulty shown as dots plus text.
+- **Choose workout:**
+  - Distance / Time / Free; presets as big chips plus custom input.
+  - Pace boats on/off, with the target pace adjustable in ±1 s steps (boats at target −5 / 0 / +5 s).
+  - PB ghost on/off, with the PB time shown or "no PB yet".
+  - Voice language (EN/FR/AR). Remembered (`state/raceSetup.js`).
+- **Ready:** summary (map preview, workout, opponents, rower, which links to the picker), connection pill, a big 280 dp **GO**, and a warning when the PM5 isn't connected.
+- **Race HUD** (`components/hud/`):
+  - Course progress bar with a dot per boat.
+  - Glass panel with time (time left in time races), distance, speed and calories.
+  - Center: pace gauge (pace or km/h, from Settings) and watts. The ring color shows ahead/behind target, plus an arrow and a ±s label.
+  - Left: stroke rate in the accent color, pulsing on every real stroke; heart rate when present; target panel.
+  - Right: gap to the boats ahead and behind (m and s), mini-map ring with km and rank ("1st / 4").
+  - Hold-to-exit button (1 s fill; "Hold to finish" in free mode); camera toggle (chase/side/overhead); tabular figures throughout.
+- **Countdown:** huge animated 5…1…GO. Voice "Get ready… 5, 4, 3, 2, 1… Go!" through `expo-speech` in the chosen language. Synthesized start horn (`tools/sounds/make-horn.mjs`, original sound) and haptics. 3-2-1 again when resuming after signal loss.
+- **Splits:** a voice line every 500 m ("500 meters, pace 2 04") plus a haptic. Finish line and haptic at the end. Each honors the Voice / Sounds / Vibrations settings (`race/announcer.js`).
+- **Signal lost:** a "Reconnecting…" overlay with the paused time; after 60 s, "End race" / "Keep waiting".
+- **Finish:** the HUD hides, a "Finished · time" banner shows, and the camera moves to the finish line for 3.5 s. The result is saved to history with PB detection, then the screen moves to Results.
+- **Results** (`components/ResultsView.jsx`):
+  - Time to the tenth; distance, average pace, average power, calories, average rate.
+  - New-PB badge.
+  - Ranking table (you, pace boats, PB ghost) with finish times or distances.
+  - Pace-over-distance chart (SVG) and the splits list.
+  - **Back to Home after 10 s** with a visible countdown and a **Stay** button; "Race again".
+- **History:** saved sessions (newest first, up to 200, AsyncStorage) with time, pace, map, PB trophy and rank. Tapping one opens the same results view, with delete (confirmed). Empty state links to Race.
+- **Settings:** language, main gauge (pace / km/h), voice on/off and its language, sounds, vibrations, rower picker, data source (developer options), Diagnostics, About (7 taps).
+- **i18n:** all new strings in EN/FR/AR. A test checks that every `t('…')` key used in the app exists. Menus are RTL in Arabic; the race HUD layout stays fixed.
+- **Tests:** 272 passing. New: personal bests, race config (pace boats and PB ghost), trace thinning, pace series, ordinals, translation-key usage.
+
+### Decisions
+
+- The PB ghost replays the best saved race with the same mode and target (distance: fastest time; time: longest distance). Exits and abandoned races never count.
+- Free-mode exit and "End race" still save the session (shown as "Not finished"); they never set a PB.
+- Spoken pace is "2 04" rather than "2:04", which every TTS voice reads naturally.
+
+### Not verified
+
+- Nothing in Phase 6 has run on a device yet: layout at the tablet's real size, text sizes at font scale 1.3, TTS voices installed on the client's tablet (Arabic TTS may be missing on some Android builds), horn playback, haptics.
+
+## Phase 7: Hardening and delivery (done; first APK not built yet)
+
+### Done
+
+- **End-to-end reconnection tests for every simulator key** (`app/src/race/simBridge.test.js`, 14 tests).
+  - How: the real simulator core plays the PM5 behind a fake BLE manager, the real `PM5Source` connects, and the real race engine runs on top, on one fake clock.
+  - Covered: connect + 250 ms; `space` stop/row (not paused while data flows); `+`/`-` pace; `[`/`]` rate; `r` PM5 reset (no jump back); `d` disconnect with auto-reconnect and resume; disconnect while hidden 5 s (backoff retries); `s` 5 s stall (stale → paused → resumes **without** reconnecting); `m` 3 malformed packets (counted, boat unaffected); `1`–`4` sample rates; old firmware refusing the rate write; a full 1000 m race through every disruption (finishes with a sane time).
+- **Fixed (found by those tests):** when the sample-rate write is refused (old firmware), the app assumed 500 ms. It now reads 0x0034 back and reports the real rate.
+- **App identity:** an original logo generated from code (`npm run brand`): app icon, Android adaptive icon (safe-zone foreground on the app background), splash image.
+- **Versioning:** `version` and `buildNumber` in `app/package.json` are the single source; Android `versionCode` = `buildNumber`. Checked with `expo prebuild`: versionCode 1, versionName 0.1.0, launcher icons and splash generated, manifest still correct.
+- **Delivery:**
+  - `npm run apk` (EAS `preview` profile → installable APK);
+  - `docs/RELEASE_NOTES.md` (0.1.0 build 1 + install steps);
+  - `docs/CLIENT_TEST_CHECKLIST.md`, the 11 steps of the brief in English and French, each with its Mark event preset and expected result.
+- **Docs:**
+  - `docs/RECONNECTION_TEST.md`: every simulator key, what the app must show, and the log line to look for;
+  - `README.md`: architecture diagram, scripts, data sources, logs, replay, delivery steps.
+- **Tests:** 286 passing, 23 suites.
+
+### Before sending to the client
+
+1. `npm run apk` (needs your EAS login; EAS may ask to create a release keystore the first time; let it).
+2. Install the APK on a tablet yourself: run through the checklist once against `npm run sim`, and check the frame rate (developer options show FPS on the race screen).
+3. Send the APK link + checklist; collect the logs.
+
+### Still open
+
+- Not run on a device yet: Phases 5–7 (3D, HUD, voice, horn, haptics, characters), and the APK itself.
+- Real PM5 checks listed as **[verify on PM5]** in `docs/PROTOCOL_NOTES.md` (0x0036 length, 0x0022 notify, stroke packet order, advertised name).
+- Character hosting: waiting on a decision (public assets repo or another host).
+- Whether `bluetoothd` must be stopped for the PC simulator.

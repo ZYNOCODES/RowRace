@@ -9,6 +9,10 @@ const PATHS = {
   bluetooth: 'M7 7.5l10 9-5 4.5V3l5 4.5-10 9',
   chevronRight: 'M9 5l7 7-7 7',
   chevronLeft: 'M15 5l-7 7 7 7',
+  chevronUp: 'M5 15l7-7 7 7',
+  chevronDown: 'M5 9l7 7 7-7',
+  camera: 'M3 8h4l2-3h6l2 3h4v11H3zM12 16.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z',
+  trophy: 'M7 4h10v4a5 5 0 01-10 0zM7 6H4a3 3 0 003 4M17 6h3a3 3 0 01-3 4M12 13v4M8 20h8',
   play: 'M7 4.5v15l12-7.5-12-7.5z',
   pause: 'M8 5v14M16 5v14',
   settings:

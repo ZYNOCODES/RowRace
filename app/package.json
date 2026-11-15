@@ -1,6 +1,7 @@
 {
   "name": "@rowrace/app",
   "version": "0.1.0",
+  "buildNumber": 1,
   "private": true,
   "main": "expo-router/entry",
   "scripts": {

@@ -11,9 +11,10 @@ import { logger, sourceManager } from '../services';
  * @param {{ mode: 'distance'|'time'|'free', target?: number,
  *   paceBoats?: { id: string, name: string, pace: number }[],
  *   ghost?: { name: string, points: { t: number, d: number }[] } | null }} config
- * @param {{ hudEveryMs?: number }} [opts]
+ * @param {{ hudEveryMs?: number, onEngine?: (engine: RaceEngine) => (() => void) }} [opts]
+ *   onEngine: subscribe to engine events; called before the countdown starts
  */
-export function useRaceSession(config, { hudEveryMs = 200 } = {}) {
+export function useRaceSession(config, { hudEveryMs = 200, onEngine } = {}) {
   // Configured at creation so opponents exist on the very first render (the scene needs them).
   const engine = useMemo(() => {
     const e = new RaceEngine();
@@ -36,12 +37,14 @@ export function useRaceSession(config, { hudEveryMs = 200 } = {}) {
       target: config.target,
       boats: config.paceBoats?.length ?? 0,
     });
+    const offEngine = onEngine?.(engine);
     engine.go();
     const hud = setInterval(() => setSnapshot(engine.snapshot()), hudEveryMs);
     return () => {
       clearInterval(hud);
       if (engine.state !== 'finished') engine.end('left-screen');
       offStroke();
+      offEngine?.();
       unbind();
     };
     // One session per mounted race screen.

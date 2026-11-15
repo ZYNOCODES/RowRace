@@ -1,0 +1,47 @@
+# Client test checklist · Liste de test client
+
+**English first, français ensuite.** About 25 minutes. Before each step, open **Diagnostics** and press **Mark event**: pick the matching button, or type a few words. This puts a marker in the log so we know exactly what happened when.
+
+---
+
+## English
+
+**Before you start:** the tablet is charged, Bluetooth is on, and ErgData (or any other app) is **not** connected to the PM5.
+
+| #   | Do this                                                                                                                                                                                   | You should see                                                                                           |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| 1   | **Install the APK** we sent. If Android asks, allow "Install unknown apps". Open **RowRace 3D**.                                                                                          | Welcome slides.                                                                                          |
+| 2   | Go through the slides and tap **Allow Bluetooth**. Accept the Android dialog ("Nearby devices").                                                                                          | The Connect screen.                                                                                      |
+| 3   | **Turn on the PM5**. On its main menu, open **Connect** (Bluetooth icon).                                                                                                                 | The PM5 waits for a connection.                                                                          |
+| 4   | Mark event: _Starting this test step_. In the app, tap your PM5 in the list (its serial number is shown).                                                                                 | "Connected", with serial and firmware. The app then goes to Home.                                        |
+| 5   | Mark event: _Starting this test step_. Tap **Free Row**, then Continue → Continue → **GO**. Row for **1 minute**, then hold **Finish**.                                                   | 5-4-3-2-1 countdown with voice, horn, then the boat moves with your strokes. A summary at the end.       |
+| 6   | Mark event: _Starting this test step_. Tap **Race** → pick a map → **500 m** → **GO**. Row the whole 500 m.                                                                               | Pace boats beside you, your rank, a voice announcement at the finish, then the Results screen.           |
+| 7   | Start another 500 m race. At about 200 m, press **reset** on the PM5 (Mark event: _I pressed reset on the PM5_). Keep rowing to the end.                                                  | Your boat **does not jump back**. The race continues and finishes normally.                              |
+| 8   | Start a **Free Row**. Row a little, then **walk away** with the tablet until the connection drops (≈ 15–30 m, or into another room). Mark event: _I walked away from the PM5_. Wait 20 s. | "Reconnecting…" on screen; the race clock stops.                                                         |
+| 9   | **Come back** next to the PM5. Mark event: _I came back near the PM5_.                                                                                                                    | It reconnects by itself, then a 3-2-1, then the race continues.                                          |
+| 10  | Still in the race: turn **Bluetooth off** in Android quick settings. Mark event: _I turned Bluetooth off_. Wait 10 s. Turn it **back on**. Mark event: _I turned Bluetooth on_.           | "Reconnecting…" while off; reconnection and 3-2-1 after you turn it back on. Hold **Finish** at the end. |
+| 11  | Go to **Settings → Diagnostics → Share logs** and send the file to us (WhatsApp or email).                                                                                                | A `.zip` file is shared.                                                                                 |
+
+**If something goes wrong:** press **Mark event**, write what you see (for example "screen froze", "no sound"), then **Share logs**. A screenshot or short video also helps a lot.
+
+---
+
+## Français
+
+**Avant de commencer :** la tablette est chargée, le Bluetooth est activé, et ErgData (ou une autre appli) **n’est pas** connecté au PM5.
+
+| #   | À faire                                                                                                                                                                                                                     | Résultat attendu                                                                                                   |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| 1   | **Installez l’APK** envoyé. Si Android le demande, autorisez « Installer des applis inconnues ». Ouvrez **RowRace 3D**.                                                                                                     | Écrans de bienvenue.                                                                                               |
+| 2   | Passez les écrans et touchez **Autoriser le Bluetooth**. Acceptez la fenêtre Android (« Appareils à proximité »).                                                                                                           | L’écran Connexion.                                                                                                 |
+| 3   | **Allumez le PM5**. Dans son menu principal, ouvrez **Connect** (icône Bluetooth).                                                                                                                                          | Le PM5 attend une connexion.                                                                                       |
+| 4   | Noter un événement : _Je commence cette étape du test_. Dans l’appli, touchez votre PM5 dans la liste (son numéro de série est affiché).                                                                                    | « Connecté », avec le numéro de série et le firmware. L’appli passe ensuite à l’Accueil.                           |
+| 5   | Noter un événement : _Je commence cette étape du test_. Touchez **Rame libre**, puis Continuer → Continuer → **GO**. Ramez **1 minute**, puis maintenez **Terminer**.                                                       | Compte à rebours 5-4-3-2-1 avec voix, corne, puis le bateau avance à chaque coup. Un résumé à la fin.              |
+| 6   | Noter un événement : _Je commence cette étape du test_. Touchez **Course** → choisissez une carte → **500 m** → **GO**. Ramez les 500 m en entier.                                                                          | Bateaux de rythme à côté de vous, votre classement, une annonce vocale à l’arrivée, puis l’écran de résultats.     |
+| 7   | Lancez une autre course de 500 m. Vers 200 m, appuyez sur **reset** sur le PM5 (Noter un événement : _J’ai appuyé sur reset sur le PM5_). Continuez jusqu’au bout.                                                          | Votre bateau **ne recule pas**. La course continue et se termine normalement.                                      |
+| 8   | Lancez une **Rame libre**. Ramez un peu, puis **éloignez-vous** avec la tablette jusqu’à perdre la connexion (≈ 15 à 30 m, ou dans une autre pièce). Noter un événement : _Je me suis éloigné du PM5_. Attendez 20 s.       | « Reconnexion… » à l’écran ; le chrono s’arrête.                                                                   |
+| 9   | **Revenez** près du PM5. Noter un événement : _Je suis revenu près du PM5_.                                                                                                                                                 | Reconnexion automatique, puis un 3-2-1, puis la course reprend.                                                    |
+| 10  | Toujours en course : **désactivez le Bluetooth** dans les réglages rapides d’Android. Noter un événement : _J’ai désactivé le Bluetooth_. Attendez 10 s. **Réactivez-le**. Noter un événement : _J’ai activé le Bluetooth_. | « Reconnexion… » pendant la coupure ; reconnexion et 3-2-1 après la réactivation. Maintenez **Terminer** à la fin. |
+| 11  | Allez dans **Réglages → Diagnostic → Partager les journaux** et envoyez-nous le fichier (WhatsApp ou e-mail).                                                                                                               | Un fichier `.zip` est partagé.                                                                                     |
+
+**En cas de problème :** appuyez sur **Noter un événement**, écrivez ce que vous voyez (par exemple « l’écran est figé », « pas de son »), puis **Partager les journaux**. Une capture d’écran ou une courte vidéo aide beaucoup.
