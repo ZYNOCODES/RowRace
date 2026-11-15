@@ -166,7 +166,41 @@
 
 - The Phase 1 stub screens (map, workout, ready, race, results, history, onboarding) are unchanged; they are built in phases 4–6.
 
-## Phase 4: Race engine (not started)
+## Phase 4: Race engine (done)
+
+### Done (`app/src/race/`, pure JS, no React, injected clock)
+
+- **`engine.js`:** states `idle → ready → countdown → racing ⇄ paused → resuming → racing … → finished`. `resuming` is the 3-2-1 after reconnection, a state of its own so the HUD can show it.
+  - **Modes:** `distance` (any target in m), `time` (any target in s), `free` (no target, ends with `end('exit')`). Up to 3 pace boats plus an optional PB ghost.
+  - **Clock:** race time is the app's clock from GO with pauses removed. The PM5 elapsed time is never used for the clock (it starts on the first stroke, and arrives in bursts).
+  - **Baselines:** PM5 distance at GO; rowing during the countdown is not counted. If GO happens with no data yet, the first sample becomes the baseline.
+  - **Rebasing** keeps the race distance continuous whenever the PM5 distance jumps:
+    - a PM5 reset (distance or elapsed drops) rebases with baseline 0, since the PM5 counts again from 0;
+    - after signal loss, distance rowed while the link was down is not counted (the clock was stopped too);
+    - a jump confirmed by 3 samples is absorbed.
+
+    Every rebase is emitted and logged.
+
+  - **Signal lost:**
+    - no sample for 3 s, or the link going reconnecting/disconnected/failed → `paused`, with the clock rewound to the last good sample;
+    - data back → 3-2-1 → racing; if it drops again during the 3-2-1 → back to paused;
+    - after 60 s paused → `offerEnd` ("End race" / `keepWaiting()`).
+  - **Glitches:** non-finite or null samples are ignored. A single jump larger than 15 m + 8 m/s × Δt is ignored. Speed is clamped to 0–8 m/s.
+  - **Finish:** in a distance race the finish time is interpolated between the two samples around the line. In a time race, the distance at exactly the target time (extrapolated ≤ 1 s from the last sample).
+- **`paceBoats.js`:** constant-pace boats; a ghost interpolated from a saved trace (it stops at its finish); ranking (finished boats first by time, then by distance); standing (rank/total, gap to the boats ahead and behind in meters and seconds).
+- **`stats.js`:** time-weighted average watts and SPM, calories robust to PM5 resets, a 0.5 s distance trace (pace chart and future ghosts), and 500 m splits with interpolated times (`split` events drive voice and haptics).
+- **`renderSmoother.js`:** `getRenderDistance(now)` = last distance + speed × time since the sample, with velocity feed-forward plus easing. It never goes backwards, never overshoots, and never teleports. Within 1.5 m of the truth at 60 fps with 250 ms samples.
+- **`raceView.js`:** HUD `snapshot(now)` and the final `result` (time, distance, avg pace/watts/SPM, calories, splits, trace, ranked boats, rank).
+- **`bindEngine.js`:** wires the engine to the source manager (samples + link status), ticks it every 100 ms, and logs `race` lines: state transitions with race/PM5 positions, baseline and offset; countdowns; rebases; glitches; splits; offerEnd; finish.
+- **Tests:** 242 passing (39 new, ~95% line coverage of the race modules).
+  - Scripted: normal race, countdown, baseline, splits, app clock vs PM5 elapsed, PM5 reset (distance and calories), signal loss/resume, link drop during the 3-2-1, 60 s offer, glitches (single and confirmed), speed clamp, time race (also with a pause), free mode, cancel during the countdown, config validation, pace boat ranking (live and final, distance and time), render smoothness and monotonicity, bindEngine.
+  - End to end through `MockPM5` (encoder → decoder → merger → engine): steady, reset-mid-race, dropouts, noisy packets.
+
+### Decisions
+
+- Distance rowed while the link is down is **not** counted: the race clock is stopped then, so counting it would mean free meters.
+- The pause starts at the last good sample, not when the loss is detected (3 s later).
+- The engine is UI-agnostic: phase 5–6 screens call `configure / go / end / keepWaiting`, read `snapshot()` each frame and `getRenderDistance()` for the 3D boat. Multiplayer can later feed other boats through the same `boatsAt` view.
 
 ## Phase 5: 3D (not started)
 
