@@ -1,0 +1,12 @@
+node_modules/
+.expo/
+dist/
+web-build/
+app/android/
+app/ios/
+*.apk
+*.aab
+simulator/logs/
+.env
+.DS_Store
+coverage/

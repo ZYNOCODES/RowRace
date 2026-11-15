@@ -1,0 +1,8 @@
+{
+  "name": "@rowrace/shared",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PM5 Bluetooth protocol (encode/decode), enums, physics. Pure JS, no platform dependencies.",
+  "main": "index.js",
+  "license": "UNLICENSED"
+}

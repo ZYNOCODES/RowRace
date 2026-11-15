@@ -1,0 +1,16 @@
+{
+  "name": "@rowrace/simulator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BLE peripheral that emulates a Concept2 PM5 on Linux (BlueZ).",
+  "main": "src/index.js",
+  "bin": {
+    "pm5-sim": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "@rowrace/shared": "0.1.0"
+  }
+}
