@@ -10,3 +10,7 @@ simulator/logs/
 .env
 .DS_Store
 coverage/
+tools/scene-preview/dist/
+dist/
+fbx-caracters/
+tools/scene-preview/characters/

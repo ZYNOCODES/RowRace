@@ -6,7 +6,14 @@ const reactHooks = require('eslint-plugin-react-hooks');
 
 module.exports = [
   {
-    ignores: ['**/node_modules/**', 'app/android/**', 'app/ios/**', 'app/.expo/**', 'coverage/**'],
+    ignores: [
+      '**/node_modules/**',
+      'app/android/**',
+      'app/ios/**',
+      'app/.expo/**',
+      'coverage/**',
+      'tools/**/dist/**',
+    ],
   },
   js.configs.recommended,
   {
@@ -41,6 +48,14 @@ module.exports = [
       'app/babel.config.js',
     ],
     languageOptions: { sourceType: 'commonjs' },
+  },
+  {
+    files: ['tools/**/*.mjs'],
+    languageOptions: { sourceType: 'module', globals: { ...globals.node } },
+  },
+  {
+    files: ['tools/scene-preview/**/*.js'],
+    languageOptions: { globals: { ...globals.browser } },
   },
   {
     files: ['**/*.test.js'],

@@ -4,3 +4,4 @@ app/ios
 app/.expo
 docs/*.pdf
 *.jsonl
+tools/**/dist

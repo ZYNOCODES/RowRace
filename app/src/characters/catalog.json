@@ -1,0 +1,49 @@
+{
+  "generated": "2026-11-15T15:13:26.586Z",
+  "characters": [
+    {
+      "id": "erika",
+      "name": "Erika",
+      "origin": "mixamo",
+      "license": "Mixamo (Adobe): free to use in projects, no standalone redistribution",
+      "bundled": true,
+      "url": null,
+      "bytes": 783248,
+      "triangles": 9995,
+      "height": 65534
+    },
+    {
+      "id": "ch44",
+      "name": "Shade",
+      "origin": "mixamo",
+      "license": "Mixamo (Adobe): free to use in projects, no standalone redistribution",
+      "bundled": true,
+      "url": null,
+      "bytes": 349636,
+      "triangles": 9998,
+      "height": 65534
+    },
+    {
+      "id": "vanguard",
+      "name": "Vanguard",
+      "origin": "mixamo",
+      "license": "Mixamo (Adobe): free to use in projects, no standalone redistribution",
+      "bundled": true,
+      "url": null,
+      "bytes": 301448,
+      "triangles": 10000,
+      "height": 65286
+    },
+    {
+      "id": "ch48",
+      "name": "Nova",
+      "origin": "mixamo",
+      "license": "Mixamo (Adobe): free to use in projects, no standalone redistribution",
+      "bundled": true,
+      "url": null,
+      "bytes": 1021592,
+      "triangles": 11875,
+      "height": 65534
+    }
+  ]
+}

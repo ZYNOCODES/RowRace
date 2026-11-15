@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RowRace 3D scene preview</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #0a0f1c;
+        overflow: hidden;
+      }
+      canvas {
+        display: block;
+      }
+      #hud {
+        position: fixed;
+        left: 12px;
+        top: 12px;
+        font: 13px/1.4 monospace;
+        color: #f8fafc;
+        background: rgba(10, 15, 28, 0.7);
+        padding: 8px 10px;
+        border-radius: 8px;
+        white-space: pre;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="hud">loading…</div>
+    <script type="module" src="./dist/preview.js"></script>
+  </body>
+</html>

@@ -53,6 +53,12 @@ export default function Home() {
           onPress={() => router.push('/history')}
         />
         <Button
+          label={t('home.rower')}
+          variant="secondary"
+          icon={<Icon name="wave" />}
+          onPress={() => router.push('/characters')}
+        />
+        <Button
           label={t('nav.settings')}
           variant="secondary"
           icon={<Icon name="settings" />}

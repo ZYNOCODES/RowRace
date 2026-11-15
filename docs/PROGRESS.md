@@ -202,7 +202,80 @@
 - The pause starts at the last good sample, not when the loss is detected (3 s later).
 - The engine is UI-agnostic: phase 5–6 screens call `configure / go / end / keepWaiting`, read `snapshot()` each frame and `getRenderDistance()` for the 3D boat. Multiplayer can later feed other boats through the same `boatsAt` view.
 
-## Phase 5: 3D (not started)
+## Phase 5: 3D scene (done; not yet run on a device)
+
+### Done (`app/src/scene/`, plain three.js builders + a thin R3F native wrapper)
+
+- **`world.js`:** builds the whole race world into a scene and updates it once per frame from a `Frame` (user distance and stroke data, opponents, camera mode). The same code runs in the app (R3F/expo-gl) and in the web preview harness.
+- **`skyWater.js`:**
+  - Gradient sky dome with a sun glow, and stars for the night map.
+  - Water is one cheap shader pass, with no reflection render target and no textures:
+    - analytic sine-sum ripple normals, flattened with distance (less aliasing, calm from above);
+    - Fresnel blend to the sky color, sun glint;
+    - a V-shaped foam wake behind the boat that fades with distance and speed;
+    - fog computed in the shader.
+- **`boat.js`:** the user's single scull + rower, built from code.
+  - Sliding seat, 2-bone legs (knee IK), leaning torso, and arms that follow the oar handles.
+  - Oars with catch, drive, extraction and feathering.
+  - Opponent boats are a 4-draw-call version (merged hull + rower, two rigid oars), semi-transparent and color-coded.
+- **`strokeAnimator.js`:** stroke phase driven by the measured drive/recovery times (0x35) or the stroke rate. It hurries (never backwards) to the catch when the PM5 reports a drive start, and to the finish when it reports the drive end, and glides to a rest pose when rowing stops. `poseAt()` maps phase → body and oar pose.
+- **`course.js`:** user in the middle lane at x = 0, opponents alternating sides.
+  - Buoy lines every 10 m: one instanced draw call, only a ~380 m window around the boat. Every 100 m and the last 250 m use the accent color.
+  - Distance boards every 100 m with seven-segment digits built from boxes (no text rendering needed on native).
+  - Start gate, and a finish gate with a checkered banner and flags.
+- **`scenery.js`:**
+  - Alpine: three-layer mountain ring, snow only on the high peaks, pines.
+  - Desert: dune ring and palms.
+  - Night: a skyline ring of instanced towers with a generated window texture, neon posts along both banks.
+  - Everything follows the camera: backdrops ride with it, trees and posts are recycled on a treadmill.
+- **`cameraRig.js`:**
+  - chase: spring follow with a slight stroke sway, never more than 3 m behind;
+  - side: broadcast camera outside the course;
+  - overhead;
+  - finish: a fixed view at the line, for the Phase 6 slow-motion finish.
+- **`RaceScene.jsx`:** R3F `Canvas` from `@react-three/fiber/native`. The render loop stops in the background, and the GL view is remounted on return (Android can drop the GL context). Reports FPS, draw calls and triangles.
+- **`maps.js`:** the three palettes (sky, water, fog, light, backdrop, trees, shore, course colors, card gradient for Phase 6). EN/FR/AR names and moods.
+- **`race/useRaceSession.js`:** wires engine ↔ source manager ↔ logger ↔ scene. The **race screen** shows the 3D scene with a temporary overlay (countdown, time, distance, rank, FPS/draw calls/triangles, camera toggle, long-press exit) so frame rate can be checked on the tablet before Phase 6. Params: `map`, `mode`, `target`.
+
+### Budget (tests, 2 km race with 4 opponents, every map)
+
+- < 100k triangles, < 60 draw calls, textures ≤ 1024 px (the largest is 64 px; all generated, nothing downloaded). Shadows are blob textures; no shadow maps, no post-processing.
+- Android bundle: 6.1 MB (was 4.4 MB before three.js/R3F).
+
+### Checked visually (web preview, headless Chrome with SwiftShader)
+
+- `npm run preview:scene` bundles `tools/scene-preview/` with esbuild and serves it at `http://localhost:8765/?map=alpine|desert|night&cam=chase|side|overhead|finish`. Reference screenshots are in `docs/scene-previews/`.
+- Fixed after looking at the renders:
+  - the mountains read as a cloud band (uniform snow, fogged out);
+  - the water looked icy (Fresnel too strong);
+  - the wake was blotchy and too bright, then showed checker aliasing;
+  - the buoys looked like grey rocks;
+  - the side camera sat inside the course (blocked by the next lane);
+  - the water looked like plaid from above.
+- The app's built-in browser pane has no GPU (WebGL disabled), so screenshots were rendered with the local Chrome in headless mode with a throwaway profile.
+
+### Not verified
+
+- **Real device:** frame rate on the tablet, expo-gl's WebGL2 context with three r187, GL context recovery after backgrounding. Use the race screen's FPS overlay (Home → Race → … → GO, or `/race/run?map=night`).
+- Jest needs three's ESM build transformed (`jest.config.js` maps `three` to `three.module.js`); the first test run is slower while Babel caches it.
+
+### Phase 5 follow-up: character library (Mixamo)
+
+- **Fixed: crash in Expo Go when opening the race** (`process.emitWarning is not a function`). `@react-three/fiber/native` is CommonJS and `require('three')` resolved to three r187's `three.cjs`, a Node-only shim. Metro now always resolves `three` to `build/three.module.js` (`app/metro.config.js`). Verified in an unminified bundle: the shim is no longer included. **Still to verify on the phone.**
+- **Pipeline:**
+  - `npm run characters`: FBX2glTF, then glTF-Transform (base map only, 512 px, simplify to ~10k triangles, quantize), bone check, catalog, bundled requires.
+  - `npm run characters:thumbs`: thumbnails rendered with headless Chrome.
+  - See `docs/CHARACTERS.md`.
+- **Characters:** 4 bundled (Erika, Shade, Vanguard, Nova): 220 MB of FBX → 2.4 MB of GLB, plus 96 KB of thumbnails. The others are on demand from a host (`remoteBaseUrl`, not set yet).
+- **`mixamoRower.js`:** one procedural driver for every Mixamo rig (hips on the seat, IK legs, spine swing, IK arms to the handles, head counter-rotation), solved in world space.
+  - Bug found in the render check: the IK targets were in boat space, so the character disappeared once the boat left the start line. Fixed, and now tested at z = 0, −60 and −1500.
+- **Picker:** `/characters` (Home → Rower). Bundled, downloaded or "Download · size" cards, plus the classic rower. The choice is saved in settings.
+- **Scene:** the race starts with the built-in rower and swaps in the character after loading. A load failure falls back to the built-in rower and is logged.
+- **Checked visually** (headless Chrome renders): characters seated with hands on the handles, from the chase and side views.
+- **Not verified:**
+  - on device: GLB loading through R3F native (`useLoader` + expo-asset), skinned-mesh frame rate on the tablet;
+  - rowing realism: knee compression at the catch is mild, to tune later;
+  - the on-demand download path: hosting is ready as GitHub Release assets (`npm run characters:publish`), but no repo is configured yet and `gh` is not installed on this PC.
 
 ## Phase 6: Screens and HUD (not started)
 

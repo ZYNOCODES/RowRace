@@ -1,0 +1,42 @@
+{
+  "$comment": "Character library manifest. Add an entry per FBX (Mixamo) or GLB (CC0) file, then run `npm run characters`. bundled=true ships in the APK; the others are uploaded with `npm run characters:publish` to the GitHub Release below and downloaded by the app on demand.",
+  "release": {
+    "repo": "",
+    "tag": "characters-v1"
+  },
+  "remoteBaseUrl": "",
+  "characters": [
+    {
+      "id": "erika",
+      "name": "Erika",
+      "source": "fbx-caracters/character (1).fbx",
+      "origin": "mixamo",
+      "license": "Mixamo (Adobe): free to use in projects, no standalone redistribution",
+      "bundled": true
+    },
+    {
+      "id": "ch44",
+      "name": "Shade",
+      "source": "fbx-caracters/character (2).fbx",
+      "origin": "mixamo",
+      "license": "Mixamo (Adobe): free to use in projects, no standalone redistribution",
+      "bundled": true
+    },
+    {
+      "id": "vanguard",
+      "name": "Vanguard",
+      "source": "fbx-caracters/character (3).fbx",
+      "origin": "mixamo",
+      "license": "Mixamo (Adobe): free to use in projects, no standalone redistribution",
+      "bundled": true
+    },
+    {
+      "id": "ch48",
+      "name": "Nova",
+      "source": "fbx-caracters/character.fbx",
+      "origin": "mixamo",
+      "license": "Mixamo (Adobe): free to use in projects, no standalone redistribution",
+      "bundled": true
+    }
+  ]
+}

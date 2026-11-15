@@ -25,6 +25,8 @@ export const useSettings = create(
       /** @type {{ id: string, name: string } | null} */
       lastDevice: null,
       autoReconnect: true,
+      /** Rower character id from the character library ('classic' = built-in rower). */
+      characterId: null,
 
       set: (patch) => set(patch),
     }),

@@ -40,17 +40,20 @@ npm install
 
 ## Scripts
 
-| Command               | What it does                                                                       |
-| --------------------- | ---------------------------------------------------------------------------------- |
-| `npm test`            | Jest: shared protocol, theme, i18n, and later the race engine                      |
-| `npm run lint`        | ESLint                                                                             |
-| `npm run format`      | Prettier                                                                           |
-| `npm start`           | Dev server for the **RowRace dev client** (Bluetooth works). Same as `npm run app` |
-| `npm run start:go`    | Dev server for **Expo Go** (no Bluetooth: use the in-app simulator or replay)      |
-| `npm run app`         | Expo dev server for the dev client                                                 |
-| `npm run app:android` | Build and install the dev client on a connected Android device                     |
-| `npm run sim`         | PC PM5 simulator over Bluetooth (setup: `simulator/README.md`)                     |
-| `npm run sim:dry`     | Simulator without Bluetooth: prints the packets it would send                      |
+| Command                     | What it does                                                                       |
+| --------------------------- | ---------------------------------------------------------------------------------- |
+| `npm test`                  | Jest: shared protocol, theme, i18n, and later the race engine                      |
+| `npm run lint`              | ESLint                                                                             |
+| `npm run format`            | Prettier                                                                           |
+| `npm start`                 | Dev server for the **RowRace dev client** (Bluetooth works). Same as `npm run app` |
+| `npm run start:go`          | Dev server for **Expo Go** (no Bluetooth: use the in-app simulator or replay)      |
+| `npm run app`               | Expo dev server for the dev client                                                 |
+| `npm run app:android`       | Build and install the dev client on a connected Android device                     |
+| `npm run sim`               | PC PM5 simulator over Bluetooth (setup: `simulator/README.md`)                     |
+| `npm run preview:scene`     | Web preview of the 3D scene (same builders as the app) at http://localhost:8765    |
+| `npm run characters`        | Convert character FBX/GLB files into the app's library (see `docs/CHARACTERS.md`)  |
+| `npm run characters:thumbs` | Render character thumbnails (needs Chrome)                                         |
+| `npm run sim:dry`           | Simulator without Bluetooth: prints the packets it would send                      |
 
 Bluetooth doesn't work in Expo Go. Install the dev client once (`npm run build:dev -w app`), then use `npm start` and hot reload works just like Expo Go.
 Always start the dev server with these scripts (root or `app/`). A plain `npx expo start` at the repo root serves the wrong project, and the dev client fails with `Unable to resolve module ./_expo/loading`.
